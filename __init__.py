@@ -1,5 +1,3 @@
-import torch
-
 from utils.hf_utils import list_local_models
 from utils.torch_utils import default_device, device_list, str_to_dtype
 
@@ -31,13 +29,148 @@ schedulers = {
     "UniPCMultistepScheduler": "UniPC",
 }
 
+
 MODULE_MAP = {
-    "ComponentsLoader": {
-        "label": "Components Loader",
+    "ControlnetModelLoader": {
+        "label": "Load Controlnet Model",
+        "category": "Modular Diffusers",
+        "params": {
+            "model_id": {
+                "label": "Model ID",
+                "type": "string",
+                "default": "xinsir/controlnet-depth-sdxl-1.0",
+            },
+            "variant": {
+                "label": "Variant",
+                "type": "string",
+                "options": ["", "fp16"],
+                "default": "",
+                "display": "autocomplete",
+                "no_validation": True,
+            },
+            "dtype": {
+                "label": "dtype",
+                "options": ["auto", "float32", "bfloat16", "float16"],
+                "default": "float16",
+                "postProcess": str_to_dtype,
+            },
+            "controlnet_model": {
+                "label": "Controlnet Model",
+                "display": "output",
+                "type": "controlnet_model",
+            },
+        },
+    },
+    "ControlnetUnionModelLoader": {
+        "label": "Load Controlnet Union Model",
+        "category": "Modular Diffusers",
+        "params": {
+            "model_id": {
+                "label": "Model ID",
+                "type": "string",
+                "default": "OzzyGT/controlnet-union-promax-sdxl-1.0",
+            },
+            "variant": {
+                "label": "Variant",
+                "type": "string",
+                "options": ["", "fp16"],
+                "default": "",
+                "display": "autocomplete",
+                "no_validation": True,
+            },
+            "dtype": {
+                "label": "dtype",
+                "options": ["auto", "float32", "bfloat16", "float16"],
+                "default": "float16",
+                "postProcess": str_to_dtype,
+            },
+            "controlnet_union_model": {
+                "label": "Controlnet Union Model",
+                "display": "output",
+                "type": "controlnet_union_model",
+            },
+        },
+    },
+    "UnetLoader": {
+        "label": "Unet Loader",
+        "category": "Modular Diffusers",
+        "params": {
+            "model_id": {
+                "label": "Model ID",
+                "options": list_local_models(),
+                "display": "autocomplete",
+                "no_validation": True,
+                "default": "stabilityai/stable-diffusion-xl-base-1.0",
+            },
+            "subfolder": {
+                "label": "Subfolder",
+                "type": "string",
+                "default": "unet",
+            },
+            "variant": {
+                "label": "Variant",
+                "type": "string",
+                "options": ["", "fp16"],
+                "default": "",
+                "display": "autocomplete",
+                "no_validation": True,
+            },
+            "dtype": {
+                "label": "dtype",
+                "options": ["auto", "float32", "bfloat16", "float16"],
+                "default": "float16",
+                "postProcess": str_to_dtype,
+            },
+            "unet": {
+                "label": "Unet",
+                "display": "output",
+                "type": "diffusers_unet",
+            },
+        },
+    },
+    "VAELoader": {
+        "label": "VAE Loader",
+        "category": "Modular Diffusers",
+        "params": {
+            "model_id": {
+                "label": "Model ID",
+                "options": list_local_models(),
+                "display": "autocomplete",
+                "no_validation": True,
+                "default": "stabilityai/stable-diffusion-xl-base-1.0",
+            },
+            "subfolder": {
+                "label": "Subfolder",
+                "type": "string",
+                "default": "vae",
+            },
+            "variant": {
+                "label": "Variant",
+                "type": "string",
+                "options": ["", "fp16"],
+                "default": "",
+                "display": "autocomplete",
+                "no_validation": True,
+            },
+            "dtype": {
+                "label": "dtype",
+                "options": ["auto", "float32", "bfloat16", "float16"],
+                "default": "float16",
+                "postProcess": str_to_dtype,
+            },
+            "vae": {
+                "label": "VAE",
+                "display": "output",
+                "type": "diffusers_vae",
+            },
+        },
+    },
+    "ModelsLoader": {
+        "label": "Diffusers Model Loader",
         "category": "Modular Diffusers",
         "params": {
             "repo_id": {
-                "label": "Repo ID",
+                "label": "Repository ID",
                 "options": list_local_models(),
                 "display": "autocomplete",
                 "no_validation": True,
@@ -45,11 +178,11 @@ MODULE_MAP = {
             },
             "variant": {
                 "label": "Variant",
-                "options": ["[unset]", "fp32", "fp16"],
-                "postProcess": lambda variant, params: variant
-                if variant != "[unset]"
-                else None,
-                "default": "fp16",
+                "type": "string",
+                "options": ["", "fp16"],
+                "default": "",
+                "display": "autocomplete",
+                "no_validation": True,
             },
             "device": {
                 "label": "Device",
@@ -58,30 +191,59 @@ MODULE_MAP = {
                 "default": default_device,
             },
             "dtype": {
-                "label": "Dtype",
-                "type": "string",
-                "options": ["auto", "float32", "float16", "bfloat16"],
+                "label": "dtype",
+                "options": ["auto", "float32", "bfloat16", "float16"],
                 "default": "float16",
                 "postProcess": str_to_dtype,
             },
-            "components": {
-                "label": "Components",
+            "unet": {
+                "label": "Unet",
+                "display": "input",
+                "type": "diffusers_unet",
+            },
+            "vae": {
+                "label": "VAE",
+                "display": "input",
+                "type": "diffusers_vae",
+            },
+            "lora_list": {
+                "label": "Lora",
+                "display": "input",
+                "type": "lora",
+            },
+            "text_encoders": {
+                "label": "Text Encoders",
                 "display": "output",
-                "type": "diffusers_components",
+                "type": "diffusers_text_encoders",
+            },
+            "unet_out": {
+                "label": "UNet",
+                "display": "output",
+                "type": "diffusers_unet",
+            },
+            "vae_out": {
+                "label": "VAE",
+                "display": "output",
+                "type": "diffusers_vae",
+            },
+            "scheduler": {
+                "label": "Scheduler",
+                "display": "output",
+                "type": "diffusers_scheduler",
             },
         },
     },
-    "TextEncoder": {
-        "label": "Text Encoder",
+    "EncodePrompt": {
+        "label": "Encode Prompt",
         "category": "Modular Diffusers",
         "params": {
-            "components": {
-                "label": "Components",
+            "text_encoders": {
+                "label": "Text Encoders",
                 "display": "input",
-                "type": "diffusers_components",
+                "type": "diffusers_text_encoders",
             },
-            "positive_prompt": {
-                "label": "Positive Prompt",
+            "prompt": {
+                "label": "Prompt",
                 "type": "string",
                 "display": "textarea",
             },
@@ -97,14 +259,57 @@ MODULE_MAP = {
             },
         },
     },
+    "Scheduler": {
+        "label": "Scheduler",
+        "category": "Modular Diffusers",
+        "params": {
+            "input_scheduler": {
+                "label": "Scheduler",
+                "display": "input",
+                "type": "diffusers_scheduler",
+            },
+            "scheduler": {
+                "label": "Scheduler",
+                "display": "select",
+                "type": "string",
+                "options": schedulers,
+                "default": "EulerDiscreteScheduler",
+            },
+            "karras": {
+                "label": "Karras",
+                "type": "boolean",
+                "default": False,
+            },
+            "trailing": {
+                "label": "Trailing",
+                "type": "boolean",
+                "default": False,
+            },
+            "v_prediction": {
+                "label": "V-Prediction",
+                "type": "boolean",
+                "default": False,
+            },
+            "output_scheduler": {
+                "label": "Scheduler",
+                "display": "output",
+                "type": "diffusers_scheduler",
+            },
+        },
+    },
     "Denoise": {
         "label": "Denoise",
         "category": "Modular Diffusers",
         "params": {
-            "components": {
-                "label": "Components",
+            "unet": {
+                "label": "Unet",
                 "display": "input",
-                "type": "diffusers_components",
+                "type": "diffusers_unet",
+            },
+            "scheduler": {
+                "label": "Scheduler",
+                "display": "input",
+                "type": "diffusers_scheduler",
             },
             "embeddings": {
                 "label": "Embeddings",
@@ -153,73 +358,19 @@ MODULE_MAP = {
                 "step": 8,
                 "group": "dimensions",
             },
-            "scheduler": {
-                "label": "Scheduler",
-                "display": "select",
-                "type": ["string", "scheduler"],
-                "options": schedulers,
-                "default": "EulerDiscreteScheduler",
-            },
-            "karras": {
-                "label": "Karras",
-                "type": "boolean",
-                "default": False,
-                "group": {
-                    "key": "scheduler_options",
-                    "label": "Scheduler Options",
-                    "display": "collapse",
-                },
-            },
-            "trailing": {
-                "label": "Trailing",
-                "type": "boolean",
-                "default": False,
-                "group": "scheduler_options",
-            },
-            "v_prediction": {
-                "label": "V-Prediction",
-                "type": "boolean",
-                "default": False,
-                "group": "scheduler_options",
-            },
-            "image": {
-                "label": "Image",
-                "type": "image",
-                "display": "input",
-                "group": {
-                    "key": "image_to_image",
-                    "label": "Image to Image / Inpainting",
-                    "display": "collapse",
-                },
-            },
-            "strength": {
-                "label": "Strength",
-                "type": "float",
-                "display": "slider",
-                "default": 0.5,
-                "min": 0,
-                "max": 1,
-                "step": 0.01,
-                "group": "image_to_image",
-            },
             "guider": {
                 "label": "Optional Guider",
                 "type": "guider",
                 "display": "input",
-            },
-            "lora": {
-                "label": "Lora",
-                "display": "input",
-                "type": "lora",
             },
             "controlnet": {
                 "label": "Controlnet",
                 "type": "controlnet",
                 "display": "input",
             },
-            "ip_adapter": {
-                "label": "IP Adapter",
-                "type": "ip_adapter",
+            "ip_adapter_image_embeddings": {
+                "label": "IP Adapter Embeddings",
+                "type": "ip_adapter_embeddings",
                 "display": "input",
             },
             "latents": {
@@ -233,10 +384,10 @@ MODULE_MAP = {
         "label": "Decode Latents",
         "category": "Modular Diffusers",
         "params": {
-            "components": {
-                "label": "Components",
+            "vae": {
+                "label": "VAE",
                 "display": "input",
-                "type": "diffusers_components",
+                "type": "diffusers_vae",
             },
             "latents": {
                 "label": "Latents",
@@ -344,54 +495,16 @@ MODULE_MAP = {
             },
         },
     },
-    "LoadControlnetModel": {
-        "label": "Load Controlnet Model",
-        "category": "Modular Diffusers",
-        "params": {
-            "model_id": {
-                "label": "Model ID",
-                "type": "string",
-                "description": "The ID of the model to use",
-                "default": "xinsir/controlnet-depth-sdxl-1.0",
-            },
-            "variant": {
-                "label": "Variant",
-                "options": ["[unset]", "fp32", "fp16"],
-                "postProcess": lambda variant, params: variant
-                if variant != "[unset]"
-                else None,
-                "default": "fp16",
-                "description": "The variant of the checkpoint to use",
-            },
-            "dtype": {
-                "label": "dtype",
-                "options": ["Auto", "fp32", "fp16", "bf16"],
-                "postProcess": lambda dtype, params: {
-                    "[unset]": torch.float32,
-                    "fp32": torch.float32,
-                    "fp16": torch.float16,
-                    "bf16": torch.bfloat16,
-                }[dtype if dtype != "Auto" else params["variant"]],
-                "default": "Auto",
-                "description": 'The data type to convert the model to. If "Auto" is selected, the data type will be inferred from the checkpoint.',
-            },
-            "controlnet_model": {
-                "label": "Controlnet Model",
-                "display": "output",
-                "type": "controlnet_model",
-            },
-        },
-    },
     "Controlnet": {
         "label": "Controlnet",
         "category": "Modular Diffusers",
         "params": {
-            "image": {
-                "label": "Conditioning image",
+            "control_image": {
+                "label": "Control Image",
                 "type": "image",
                 "display": "input",
             },
-            "conditioning_scale": {
+            "controlnet_conditioning_scale": {
                 "label": "Scale",
                 "type": "float",
                 "display": "slider",
@@ -399,7 +512,7 @@ MODULE_MAP = {
                 "min": 0,
                 "max": 1,
             },
-            "guidance_start": {
+            "control_guidance_start": {
                 "label": "Start",
                 "type": "float",
                 "display": "slider",
@@ -407,7 +520,7 @@ MODULE_MAP = {
                 "min": 0,
                 "max": 1,
             },
-            "guidance_end": {
+            "control_guidance_end": {
                 "label": "End",
                 "type": "float",
                 "display": "slider",
@@ -424,61 +537,6 @@ MODULE_MAP = {
                 "label": "Controlnet",
                 "display": "output",
                 "type": "controlnet",
-            },
-        },
-    },
-    "MultiControlNet": {
-        "label": "Multi ControlNet",
-        "category": "Modular Diffusers",
-        "params": {
-            "controlnet_list": {
-                "label": "ControlNet",
-                "display": "input",
-                "type": "controlnet",
-                "spawn": True,
-            },
-            "controlnet": {
-                "label": "Multi Controlnet",
-                "type": "controlnet",
-                "display": "output",
-            },
-        },
-    },
-    "LoadControlnetUnionModel": {
-        "label": "Load Controlnet Union Model",
-        "category": "Modular Diffusers",
-        "params": {
-            "model_id": {
-                "label": "Model ID",
-                "type": "string",
-                "description": "The ID of the model to use",
-                "default": "OzzyGT/controlnet-union-promax-sdxl-1.0",
-            },
-            "variant": {
-                "label": "Variant",
-                "options": ["[unset]", "fp32", "fp16"],
-                "postProcess": lambda variant, params: variant
-                if variant != "[unset]"
-                else None,
-                "default": "fp16",
-                "description": "The variant of the checkpoint to use",
-            },
-            "dtype": {
-                "label": "dtype",
-                "options": ["Auto", "fp32", "fp16", "bf16"],
-                "postProcess": lambda dtype, params: {
-                    "[unset]": torch.float32,
-                    "fp32": torch.float32,
-                    "fp16": torch.float16,
-                    "bf16": torch.bfloat16,
-                }[dtype if dtype != "Auto" else params["variant"]],
-                "default": "Auto",
-                "description": 'The data type to convert the model to. If "Auto" is selected, the data type will be inferred from the checkpoint.',
-            },
-            "controlnet_union_model": {
-                "label": "Controlnet Union Model",
-                "display": "output",
-                "type": "controlnet_union_model",
             },
         },
     },
@@ -526,7 +584,7 @@ MODULE_MAP = {
                 "type": "image",
                 "display": "input",
             },
-            "conditioning_scale": {
+            "controlnet_conditioning_scale": {
                 "label": "Scale",
                 "type": "float",
                 "display": "slider",
@@ -534,7 +592,7 @@ MODULE_MAP = {
                 "min": 0,
                 "max": 1,
             },
-            "guidance_start": {
+            "control_guidance_start": {
                 "label": "Start",
                 "type": "float",
                 "display": "slider",
@@ -542,7 +600,7 @@ MODULE_MAP = {
                 "min": 0,
                 "max": 1,
             },
-            "guidance_end": {
+            "control_guidance_end": {
                 "label": "End",
                 "type": "float",
                 "display": "slider",
@@ -562,25 +620,30 @@ MODULE_MAP = {
             },
         },
     },
-    "IPAdapter": {
-        "label": "IP Adapter",
+    "MultiControlNet": {
+        "label": "Multi ControlNet",
         "category": "Modular Diffusers",
         "params": {
-            "image": {
-                "label": "IP Adapter Image",
-                "type": "image",
+            "controlnet_list": {
+                "label": "ControlNet",
                 "display": "input",
+                "type": "controlnet",
+                "spawn": True,
             },
-            "scale": {
-                "label": "Start",
-                "type": "float",
-                "display": "slider",
-                "default": 0.0,
-                "min": 0,
-                "max": 1,
+            "controlnet": {
+                "label": "Multi Controlnet",
+                "type": "controlnet",
+                "display": "output",
             },
+        },
+    },
+    "IPAdapterInput": {
+        "label": "IP-Adapter Input",
+        "description": "Configure IP-Adapter settings and input",
+        "category": "Modular Diffusers",
+        "params": {
             "repo_id": {
-                "label": "Repo ID",
+                "label": "Repository ID",
                 "type": "string",
                 "default": "h94/IP-Adapter",
             },
@@ -592,17 +655,58 @@ MODULE_MAP = {
             "weight_name": {
                 "label": "Weight Name",
                 "type": "string",
-                "default": "ip-adapter-plus_sdxl_vit-h.safetensors",
+                "default": "ip-adapter_sdxl_vit-h.safetensors",
             },
             "image_encoder_path": {
                 "label": "Image Encoder Path",
                 "type": "string",
                 "default": "models/image_encoder",
             },
-            "ip_adapter": {
-                "label": "IP Adapter",
-                "type": "ip_adapter",
+            "image": {
+                "label": "Image",
+                "display": "input",
+                "type": "image",
+            },
+            "scale": {
+                "label": "Scale",
+                "type": "float",
+                "default": 1.0,
+                "min": 0,
+                "max": 1,
+                "step": 0.01,
+            },
+            "ip_adapter_input": {
+                "label": "IP-Adapter Input",
                 "display": "output",
+                "type": "ip_adapter",
+            },
+        },
+    },
+    "IPAdapter": {
+        "label": "IP-Adapter",
+        "description": "Process images with IP-Adapter",
+        "category": "Modular Diffusers",
+        "params": {
+            "unet": {
+                "label": "UNet",
+                "display": "input",
+                "type": "diffusers_unet",
+            },
+            "ip_adapter_inputs": {
+                "label": "IP-Adapter Inputs",
+                "display": "input",
+                "type": "ip_adapter",
+                "spawn": True,
+            },
+            "ip_adapter_image_embeddings": {
+                "label": "IP-Adapter Embeddings",
+                "display": "output",
+                "type": "ip_adapter_embeddings",
+            },
+            "unet_out": {
+                "label": "UNet",
+                "display": "output",
+                "type": "diffusers_unet",
             },
         },
     },
