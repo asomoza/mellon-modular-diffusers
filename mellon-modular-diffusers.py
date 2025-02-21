@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import os
 
@@ -26,6 +27,7 @@ from huggingface_hub.errors import EntryNotFoundError
 from transformers import CLIPImageProcessor, CLIPVisionModelWithProjection
 
 from mellon.NodeBase import NodeBase, are_different
+from mellon.server import web_server
 
 logger = logging.getLogger("mellon")
 
@@ -552,7 +554,7 @@ class EncodePrompt(NodeBase):
 
 
 class Scheduler(NodeBase):
-    def execute(self, input_scheduler, scheduler, karras, trailing, v_prediction):
+    def execute(self, input_scheduler, scheduler, **kwargs):
         scheduler_component = components.get(input_scheduler["model_id"])
 
         scheduler_cls = getattr(
@@ -561,15 +563,14 @@ class Scheduler(NodeBase):
 
         scheduler_options = {}
 
-        if karras:
-            scheduler_options["use_karras_sigmas"] = karras
-
-        if v_prediction:
-            scheduler_options["prediction_type"] = "v_prediction"
-            scheduler_options["rescale_betas_zero_snr"] = True
-
-        if trailing:
-            scheduler_options["timestep_spacing"] = "trailing"
+        # TODO: maybe add some validation, currently assuming that all
+        # kwargs are scheduler options
+        scheduler_prefix = scheduler.lower()
+        for key, value in kwargs.items():
+            if "_" in key:
+                key_parts = key.split("_", 1)
+                if key_parts[0] == scheduler_prefix:
+                    scheduler_options[key_parts[1]] = value
 
         new_scheduler = scheduler_cls.from_config(
             scheduler_component.config, **scheduler_options
@@ -588,6 +589,29 @@ class Denoise(NodeBase):
         super().__init__(node_id)
         sdxl_auto_blocks = SDXLAutoBlocks()
         self._denoise_node = ModularPipeline.from_block(sdxl_auto_blocks)
+        self._num_inference_steps = 0
+
+    def step_progress_update(self, _pipe, step, _timestep, data):
+        if self.node_id:
+            try:
+                progress = int((step + 1) / self._num_inference_steps * 100)
+                asyncio.run_coroutine_threadsafe(
+                    web_server.client_queue.put(
+                        {
+                            "client_id": self._client_id,
+                            "data": {
+                                "type": "progress",
+                                "nodeId": self.node_id,
+                                "progress": progress,
+                            },
+                        }
+                    ),
+                    web_server.event_loop,
+                )
+            except Exception as e:
+                logger.warning(f"Error queuing progress update: {str(e)}")
+
+        return data
 
     def execute(
         self,
@@ -611,6 +635,7 @@ class Denoise(NodeBase):
         )
 
         generator = torch.Generator(device="cpu").manual_seed(seed)
+        self._num_inference_steps = steps
 
         denoise_kwargs = {
             **embeddings,  # Now embeddings is already a dict
@@ -619,7 +644,8 @@ class Denoise(NodeBase):
             "height": height,
             "width": width,
             "output": "latents",
-            "num_inference_steps": steps,
+            "num_inference_steps": self._num_inference_steps,
+            "callback_on_step_end": self.step_progress_update,
         }
 
         if ip_adapter_image_embeddings is not None:

@@ -1,34 +1,7 @@
 from utils.hf_utils import list_local_models
 from utils.torch_utils import default_device, device_list, str_to_dtype
 
-
-class Scheduler:
-    def __init__(self, name, scheduler_class, scheduler_args):
-        self.name = name
-        self.scheduler_class = scheduler_class
-        self.scheduler_args = scheduler_args
-
-
-schedulers = {
-    "DDIMScheduler": "DDIM",
-    "DDPMScheduler": "DDPM",
-    "DEISMultistepScheduler": "DEIS",
-    "DPMSolverSinglestepScheduler": "DPM++ 2S",
-    "DPMSolverMultistepScheduler": "DPM++ 2M",
-    "DPMSolverSDEScheduler": "DPM++ SDE",
-    "EDMDPMSolverMultistepScheduler": "DPM++ 2M EDM",
-    "EulerDiscreteScheduler": "Euler",
-    "EulerAncestralDiscreteScheduler": "Euler Ancestral",
-    "HeunDiscreteScheduler": "Heun",
-    "KDPM2DiscreteScheduler": "KDPM2",
-    "KDPM2AncestralDiscreteScheduler": "KDPM2 Ancestral",
-    "LCMScheduler": "LCM",
-    "LMSDiscreteScheduler": "LMS",
-    "PNDMScheduler": "PNDM",
-    "TCDScheduler": "TCD",
-    "UniPCMultistepScheduler": "UniPC",
-}
-
+from .schedulers import load_all_schedulers
 
 MODULE_MAP = {
     "ControlnetModelLoader": {
@@ -267,28 +240,6 @@ MODULE_MAP = {
                 "label": "Scheduler",
                 "display": "input",
                 "type": "diffusers_scheduler",
-            },
-            "scheduler": {
-                "label": "Scheduler",
-                "display": "select",
-                "type": "string",
-                "options": schedulers,
-                "default": "EulerDiscreteScheduler",
-            },
-            "karras": {
-                "label": "Karras",
-                "type": "boolean",
-                "default": False,
-            },
-            "trailing": {
-                "label": "Trailing",
-                "type": "boolean",
-                "default": False,
-            },
-            "v_prediction": {
-                "label": "V-Prediction",
-                "type": "boolean",
-                "default": False,
             },
             "output_scheduler": {
                 "label": "Scheduler",
@@ -711,3 +662,20 @@ MODULE_MAP = {
         },
     },
 }
+
+schedulers, schedulers_params = load_all_schedulers()
+
+scheduler_selection = {
+    "scheduler": {
+        "label": "Scheduler",
+        "options": schedulers,
+        "default": list(schedulers.keys())[0],
+        "onChange": {
+            "action": "show",
+            "target": {key: f"{key.lower()}_group" for key in schedulers},
+        },
+    }
+}
+
+MODULE_MAP["Scheduler"]["params"].update(scheduler_selection)
+MODULE_MAP["Scheduler"]["params"].update(schedulers_params)
