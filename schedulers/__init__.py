@@ -19,4 +19,6 @@ def load_all_schedulers():
             if hasattr(module, "schedulers_params"):
                 schedulers_params.update(module.schedulers_params)
 
+    schedulers = dict(sorted(schedulers.items()))
+
     return schedulers, schedulers_params

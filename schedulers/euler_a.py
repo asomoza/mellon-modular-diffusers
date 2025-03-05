@@ -1,5 +1,5 @@
 schedulers_params = {
-    "ddimscheduler_prediction_type": {
+    "eulerancestraldiscretescheduler_prediction_type": {
         "label": "Prediction Type",
         "options": {
             "epsilon": "Epsilon",
@@ -7,26 +7,27 @@ schedulers_params = {
         },
         "default": "epsilon",
         "group": {
-            "key": "ddimscheduler",
+            "key": "eulerancestraldiscretescheduler",
             "label": "Advanced",
             "display": "collapse",
         },
     },
-    "ddimscheduler_timestep_spacing": {
+    "eulerancestraldiscretescheduler_timestep_spacing": {
         "label": "Timestep Spacing",
         "options": {
             "leading": "Leading",
             "trailing": "Trailing",
+            "linspace": "Linspace",
         },
         "default": "leading",
-        "group": "ddimscheduler",
+        "group": "eulerancestraldiscretescheduler",
     },
-    "ddimscheduler_rescale_betas_zero_snr": {
+    "eulerancestraldiscretescheduler_rescale_betas_zero_snr": {
         "label": "Rescale Betas Zero Snr",
         "type": "boolean",
         "default": False,
-        "group": "ddimscheduler",
+        "group": "eulerancestraldiscretescheduler",
     },
 }
 
-scheduler_entry = ("DDIMScheduler", "ddim")
+scheduler_entry = ("EulerAncestralDiscreteScheduler", "euler_a")

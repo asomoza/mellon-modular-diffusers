@@ -570,7 +570,11 @@ class Scheduler(NodeBase):
             if "_" in key:
                 key_parts = key.split("_", 1)
                 if key_parts[0] == scheduler_prefix:
-                    scheduler_options[key_parts[1]] = value
+                    if key_parts[1] == "sigmas":
+                        if value != "default":
+                            scheduler_options[value] = True
+                    else:
+                        scheduler_options[key_parts[1]] = value
 
         new_scheduler = scheduler_cls.from_config(
             scheduler_component.config, **scheduler_options

@@ -1,5 +1,5 @@
 schedulers_params = {
-    "deismultistepscheduler_prediction_type": {
+    "kdpm2discretescheduler_prediction_type": {
         "label": "Prediction Type",
         "options": {
             "epsilon": "Epsilon",
@@ -7,21 +7,12 @@ schedulers_params = {
         },
         "default": "epsilon",
         "group": {
-            "key": "deismultistepscheduler",
+            "key": "kdpm2discretescheduler",
             "label": "Advanced",
             "display": "collapse",
         },
     },
-    "deismultistepscheduler_timestep_spacing": {
-        "label": "Timestep Spacing",
-        "options": {
-            "leading": "Leading",
-            "trailing": "Trailing",
-        },
-        "default": "leading",
-        "group": "deismultistepscheduler",
-    },
-    "deismultistepscheduler_sigmas": {
+    "kdpm2discretescheduler_sigmas": {
         "label": "Sigmas",
         "display": "radio",
         "options": {
@@ -31,9 +22,19 @@ schedulers_params = {
             "use_beta_sigmas": "Beta",
         },
         "default": "default",
-        "group": "deismultistepscheduler",
+        "group": "kdpm2discretescheduler",
+    },
+    "kdpm2discretescheduler_timestep_spacing": {
+        "label": "Timestep Spacing",
+        "options": {
+            "leading": "Leading",
+            "trailing": "Trailing",
+            "linspace": "Linspace",
+        },
+        "default": "leading",
+        "group": "kdpm2discretescheduler",
     },
     # TODO: check rescale betas SNR
 }
 
-scheduler_entry = ("DEISMultistepScheduler", "deis")
+scheduler_entry = ("KDPM2DiscreteScheduler", "kdpm_2")

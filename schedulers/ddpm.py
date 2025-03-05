@@ -4,14 +4,12 @@ schedulers_params = {
         "options": {
             "epsilon": "Epsilon",
             "v_prediction": "V Prediction",
-            "sample": "Sample",
         },
         "default": "epsilon",
         "group": {
             "key": "ddpmscheduler",
             "label": "Advanced",
-            "display": "group",
-            "direction": "column",
+            "display": "collapse",
         },
     },
     "ddpmscheduler_timestep_spacing": {
@@ -31,4 +29,4 @@ schedulers_params = {
     },
 }
 
-scheduler_entry = ("DDPMScheduler", "DDPM")
+scheduler_entry = ("DDPMScheduler", "ddpm")

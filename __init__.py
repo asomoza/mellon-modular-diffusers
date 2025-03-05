@@ -374,6 +374,11 @@ MODULE_MAP = {
                 "type": "lora",
                 "display": "output",
             },
+            "is_local": {
+                "label": "Is Local Path",
+                "type": "boolean",
+                "default": False,
+            },
         },
     },
     "MultiLora": {

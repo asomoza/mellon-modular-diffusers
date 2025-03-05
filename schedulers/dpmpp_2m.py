@@ -4,29 +4,27 @@ schedulers_params = {
         "options": {
             "epsilon": "Epsilon",
             "v_prediction": "V Prediction",
-            "sample": "Sample",
         },
         "default": "epsilon",
         "group": {
             "key": "dpmsolvermultistepscheduler",
             "label": "Advanced",
-            "display": "group",
-            "direction": "column",
+            "display": "collapse",
         },
     },
     "dpmsolvermultistepscheduler_algorithm_type": {
-        "label": "Prediction Type",
+        "label": "Algorithm Type",
         "options": {
-            "dpmsolver++": "DPM++",
-            "sde-dpmsolver++": "SDE++",
-            "dpmsolver": "DPM",
-            "sde-dpmsolver": "SDE",
+            "dpmsolver++": "dpm++",
+            "sde-dpmsolver++": "sde++",
+            "dpmsolver": "dpm",
+            "sde-dpmsolver": "sde",
         },
         "default": "dpmsolver++",
         "group": "dpmsolvermultistepscheduler",
     },
     "dpmsolvermultistepscheduler_solver_type": {
-        "label": "Prediction Type",
+        "label": "2nd Order Solver Type",
         "options": {
             "midpoint": "Midpoint",
             "heun": "Heun",
@@ -40,22 +38,16 @@ schedulers_params = {
         "default": False,
         "group": "dpmsolvermultistepscheduler",
     },
-    "dpmsolvermultistepscheduler_use_karras_sigmas": {
-        "label": "use Karras Sigmas",
-        "type": "boolean",
-        "default": False,
-        "group": "dpmsolvermultistepscheduler",
-    },
-    "dpmsolvermultistepscheduler_use_exponential_sigmas": {
-        "label": "use Exponential Sigmas",
-        "type": "boolean",
-        "default": False,
-        "group": "dpmsolvermultistepscheduler",
-    },
-    "dpmsolvermultistepscheduler_use_beta_sigmas": {
-        "label": "use betas Sigmas",
-        "type": "boolean",
-        "default": False,
+    "dpmsolvermultistepscheduler_sigmas": {
+        "label": "Sigmas",
+        "display": "radio",
+        "options": {
+            "default": "Default",
+            "use_karras_sigmas": "Karras",
+            "use_exponential_sigmas": "Exponential",
+            "use_beta_sigmas": "Beta",
+        },
+        "default": "default",
         "group": "dpmsolvermultistepscheduler",
     },
     "dpmsolvermultistepscheduler_use_lu_lambdas": {
@@ -65,7 +57,7 @@ schedulers_params = {
         "group": "dpmsolvermultistepscheduler",
     },
     "dpmsolvermultistepscheduler_final_sigmas_type": {
-        "label": "Prediction Type",
+        "label": "Final Sigmas Type",
         "options": {
             "zero": "Zero",
             "sigma_min": "Last Sigma",
@@ -76,11 +68,19 @@ schedulers_params = {
     "dpmsolvermultistepscheduler_timestep_spacing": {
         "label": "Timestep Spacing",
         "options": {
-            "linspace": "Linspace",
             "leading": "Leading",
             "trailing": "Trailing",
+            "linspace": "Linspace",
         },
-        "default": "linspace",
+        "default": "leading",
+        "group": "dpmsolvermultistepscheduler",
+    },
+    "dpmsolvermultistepscheduler_solver_order": {
+        "label": "Solver Order",
+        "type": "int",
+        "default": 2,
+        "min": 2,
+        "max": 3,
         "group": "dpmsolvermultistepscheduler",
     },
     "dpmsolvermultistepscheduler_rescale_betas_zero_snr": {
@@ -91,4 +91,4 @@ schedulers_params = {
     },
 }
 
-scheduler_entry = ("DPMSolverMultistepScheduler", "DPM++ 2M")
+scheduler_entry = ("DPMSolverMultistepScheduler", "dpmpp_2m")
