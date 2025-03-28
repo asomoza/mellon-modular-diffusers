@@ -1,1 +1,2 @@
 diffusers @ git+https://github.com/huggingface/diffusers.git@modular-diffusers
+image_gen_aux @ git+https://github.com/huggingface/image_gen_aux.git
