@@ -1,5 +1,5 @@
 schedulers_params = {
-    "unipcscheduler_prediction_type": {
+    "unipcmultistepscheduler_prediction_type": {
         "label": "Prediction Type",
         "options": {
             "epsilon": "Epsilon",
@@ -7,18 +7,18 @@ schedulers_params = {
         },
         "default": "epsilon",
         "group": {
-            "key": "unipcscheduler",
+            "key": "unipcmultistepscheduler",
             "label": "Advanced",
             "display": "collapse",
         },
     },
-    "unipcscheduler_lower_order_final": {
+    "unipcmultistepscheduler_lower_order_final": {
         "label": "Lower Order Final",
         "type": "boolean",
         "default": True,
-        "group": "unipcscheduler",
+        "group": "unipcmultistepscheduler",
     },
-    "dpmsolvermultistepscheduler_sigmas": {
+    "unipcmultistepscheduler_sigmas": {
         "label": "Sigmas",
         "display": "radio",
         "options": {
@@ -28,18 +28,18 @@ schedulers_params = {
             "use_beta_sigmas": "Beta",
         },
         "default": "default",
-        "group": "dpmsolvermultistepscheduler",
+        "group": "unipcmultistepscheduler",
     },
-    "dpmsolvermultistepscheduler_final_sigmas_type": {
+    "unipcmultistepscheduler_final_sigmas_type": {
         "label": "Final Sigmas Type",
         "options": {
             "zero": "Zero",
             "sigma_min": "Last Sigma",
         },
         "default": "zero",
-        "group": "dpmsolvermultistepscheduler",
+        "group": "unipcmultistepscheduler",
     },
-    "unipcscheduler_timestep_spacing": {
+    "unipcmultistepscheduler_timestep_spacing": {
         "label": "Timestep Spacing",
         "options": {
             "leading": "Leading",
@@ -47,21 +47,21 @@ schedulers_params = {
             "linspace": "Linspace",
         },
         "default": "leading",
-        "group": "unipcscheduler",
+        "group": "unipcmultistepscheduler",
     },
-    "unipcscheduler_solver_order": {
+    "unipcmultistepscheduler_solver_order": {
         "label": "Solver Order",
         "type": "int",
         "default": 3,
         "min": 2,
         "max": 3,
-        "group": "unipcscheduler",
+        "group": "unipcmultistepscheduler",
     },
-    "unipcscheduler_rescale_betas_zero_snr": {
+    "unipcmultistepscheduler_rescale_betas_zero_snr": {
         "label": "Rescale Betas Zero Snr",
         "type": "boolean",
         "default": False,
-        "group": "unipcscheduler",
+        "group": "unipcmultistepscheduler",
     },
 }
 

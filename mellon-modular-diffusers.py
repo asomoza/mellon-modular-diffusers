@@ -8,7 +8,9 @@ from diffusers import (
     ControlNetModel,
     ControlNetUnionModel,
     DiffusionPipeline,
+    EulerAncestralDiscreteScheduler,
     ModularPipeline,
+    StableDiffusionXLAutoPipeline,
     UNet2DConditionModel,
 )
 from diffusers.guider import APGGuider, CFGGuider, PAGGuider
@@ -24,6 +26,7 @@ from diffusers.pipelines.stable_diffusion_xl.pipeline_stable_diffusion_xl_modula
 )
 from huggingface_hub import hf_hub_download
 from huggingface_hub.errors import EntryNotFoundError
+from image_gen_aux import DepthPreprocessor
 from transformers import CLIPImageProcessor, CLIPVisionModelWithProjection
 
 from mellon.NodeBase import NodeBase, are_different
@@ -957,3 +960,59 @@ class IPAdapter(NodeBase):
             "ip_adapter_image_embeddings": self._last_embeddings,
             "unet_out": components.get_model_info(unet["model_id"]),
         }
+
+
+class Ghiblify(NodeBase):
+    def execute(
+        self,
+        repo_id,
+        device,
+        dtype,
+        seed,
+        prompt,
+        image,
+    ):
+        components = ComponentsManager()
+        components.add_from_pretrained(repo_id, torch_dtype=dtype)
+
+        scheduler_component = components.get("scheduler")
+        new_scheduler = EulerAncestralDiscreteScheduler.from_config(
+            scheduler_component.config
+        )
+        components.add("scheduler", new_scheduler)
+
+        auto_pipe = ModularPipeline.from_block(StableDiffusionXLAutoPipeline())
+        controlnet = ControlNetUnionModel.from_pretrained(
+            "OzzyGT/controlnet-union-promax-sdxl-1.0", torch_dtype=dtype, variant="fp16"
+        )
+        components.add("controlnet", controlnet)
+
+        auto_pipe.update_states(**components.components)
+
+        auto_pipe.load_lora_weights(
+            "KappaNeuro/studio-ghibli-style",
+            weight_name="Studio Ghibli Style.safetensors",
+        )
+
+        components.enable_auto_cpu_offload(device=device)
+
+        depth_preprocessor = DepthPreprocessor.from_pretrained(
+            "depth-anything/Depth-Anything-V2-Large-hf"
+        ).to("cuda")
+        image = image.convert("RGB")
+        controlnet_union_image = depth_preprocessor(image)[0]
+
+        generator = torch.Generator(device="cuda").manual_seed(seed)
+
+        images_output = auto_pipe(
+            prompt=prompt,
+            num_inference_steps=20,
+            guidance_scale=5.0,
+            generator=generator,
+            control_mode=[1],
+            control_image=[controlnet_union_image],
+            controlnet_conditioning_scale=0.7,
+            output="images",
+        )
+
+        return {"images": images_output.images}

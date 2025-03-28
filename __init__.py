@@ -666,6 +666,53 @@ MODULE_MAP = {
             },
         },
     },
+    "Ghiblify": {
+        "label": "Ghiblify Image",
+        "category": "Modular Diffusers",
+        "params": {
+            "repo_id": {
+                "label": "Repository ID",
+                "options": list_local_models(),
+                "display": "autocomplete",
+                "no_validation": True,
+                "default": "stabilityai/stable-diffusion-xl-base-1.0",
+            },
+            "device": {
+                "label": "Device",
+                "type": "string",
+                "options": device_list,
+                "default": default_device,
+            },
+            "dtype": {
+                "label": "dtype",
+                "options": ["auto", "float32", "bfloat16", "float16"],
+                "default": "float16",
+                "postProcess": str_to_dtype,
+            },
+            "seed": {
+                "label": "Seed",
+                "type": "int",
+                "default": 0,
+                "min": 0,
+                "display": "random",
+            },
+            "prompt": {
+                "label": "Prompt",
+                "type": "string",
+                "display": "textarea",
+            },
+            "image": {
+                "label": "Source image",
+                "type": "image",
+                "display": "input",
+            },
+            "images": {
+                "label": "Images",
+                "type": "image",
+                "display": "output",
+            },
+        },
+    },
 }
 
 schedulers, schedulers_params = load_all_schedulers()
