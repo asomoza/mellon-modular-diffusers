@@ -8,9 +8,7 @@ from diffusers import (
     ControlNetModel,
     ControlNetUnionModel,
     DiffusionPipeline,
-    EulerAncestralDiscreteScheduler,
     ModularPipeline,
-    StableDiffusionXLAutoPipeline,
     UNet2DConditionModel,
 )
 from diffusers.guider import APGGuider, CFGGuider, PAGGuider
@@ -26,7 +24,6 @@ from diffusers.pipelines.stable_diffusion_xl.pipeline_stable_diffusion_xl_modula
 )
 from huggingface_hub import hf_hub_download
 from huggingface_hub.errors import EntryNotFoundError
-from image_gen_aux import DepthPreprocessor
 from transformers import CLIPImageProcessor, CLIPVisionModelWithProjection
 
 from mellon.NodeBase import NodeBase, are_different
