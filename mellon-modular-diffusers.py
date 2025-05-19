@@ -9,7 +9,6 @@ from diffusers import (
     ClassifierFreeGuidance, 
     SkipLayerGuidance, 
     LayerSkipConfig,
-    ComponentsManager, 
     StableDiffusionXLAutoPipeline, 
     ComponentSpec, 
     StableDiffusionXLModularLoader
@@ -32,7 +31,8 @@ ip_adapter_block = auto_blocks.blocks.pop("ip_adapter")
 image_encoder_block = auto_blocks.blocks.pop("image_encoder")
 
 # Initialize components manager
-components = ComponentsManager()
+# components = ComponentsManager()
+from custom import components
 
 
 def _has_changed(old_params, new_params):
