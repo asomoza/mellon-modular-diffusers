@@ -92,7 +92,7 @@ MODULE_MAP = {
             "text_encoders": {
                 "label": "Text Encoders",
                 "display": "output",
-                "type": "diffusers_text_encoders",
+                "type": "text_encoders",
             },
             "unet_out": {
                 "label": "UNet",
@@ -107,7 +107,7 @@ MODULE_MAP = {
             "scheduler": {
                 "label": "Scheduler",
                 "display": "output",
-                "type": "diffusers_scheduler",
+                "type": "scheduler",
             },
         },
     },
@@ -118,7 +118,7 @@ MODULE_MAP = {
             "text_encoders": {
                 "label": "Text Encoders",
                 "display": "input",
-                "type": "diffusers_text_encoders",
+                "type": "text_encoders",
             },
             "guider": {
                 "label": "Guider",
@@ -156,12 +156,12 @@ MODULE_MAP = {
             "input_scheduler": {
                 "label": "Scheduler",
                 "display": "input",
-                "type": "diffusers_scheduler",
+                "type": "scheduler",
             },
             "output_scheduler": {
                 "label": "Scheduler",
                 "display": "output",
-                "type": "diffusers_scheduler",
+                "type": "scheduler",
             },
         },
     },
@@ -177,7 +177,7 @@ MODULE_MAP = {
             "scheduler": {
                 "label": "Scheduler",
                 "display": "input",
-                "type": "diffusers_scheduler",
+                "type": "scheduler",
             },
             "embeddings": {
                 "label": "Embeddings",
